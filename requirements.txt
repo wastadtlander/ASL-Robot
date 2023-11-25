@@ -2,3 +2,4 @@ matplotlib
 keras
 scikit-learn
 pandas
+tensorflow
