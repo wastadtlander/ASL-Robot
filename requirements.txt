@@ -3,3 +3,5 @@ keras
 scikit-learn
 pandas
 tensorflow
+opencv-python
+mediapipe
