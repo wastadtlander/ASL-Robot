@@ -7,7 +7,6 @@ from keras.models import load_model
 import numpy as np
 import pandas as pd
 import string
-import time
 
 model = load_model("models/relu/smnist.keras")
 
@@ -47,7 +46,6 @@ while True:
                 top3_values = np.take(predicted_sign, top3_labels)
                 top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]                
                 print("Top 3 Predictions:", top3_predictions)
-                time.sleep(1)
 
     cv2.imshow('Sign Language Detection', frame)
 
