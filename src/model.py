@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout, BatchNormalization
+from keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
@@ -15,8 +16,26 @@ labelBinarizer = LabelBinarizer()
 trainLabels = labelBinarizer.fit_transform(train["label"])
 testLabels = labelBinarizer.fit_transform(test["label"])
 
-trainAttributes = (train.values[:, 1:] / 255).reshape(-1, 28, 28, 1)
-testAttributes = (test.values[:, 1:] / 255).reshape(-1, 28, 28, 1)
+# trainAttributes = (train.values[:, 1:] / 255).reshape(-1, 28, 28, 1)
+# testAttributes = (test.values[:, 1:] / 255).reshape(-1, 28, 28, 1)
+
+trainAttributes = train.drop(labels = ["label"], axis=1)
+testAttributes = test.drop(labels = ["label"], axis=1)
+
+trainAttributes /= 255
+testAttributes /= 255
+
+trainAttributes = trainAttributes.values.reshape(-1, 28, 28, 1)
+testAttributes = testAttributes.values.reshape(-1, 28, 28, 1)
+
+datagen = ImageDataGenerator(
+    rotation_range=10,
+    zoom_range = 0.1, 
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+)
+
+datagen.fit(trainAttributes)
 
 ''' 
     Building the CNN. 
@@ -44,7 +63,7 @@ model.add(Dense(units=24, activation="softmax"))
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 model.summary()
 
-history = model.fit(trainAttributes, trainLabels, batch_size = 128, epochs = 10, validation_data = (testAttributes, testLabels))
+history = model.fit(datagen.flow(trainAttributes, trainLabels, batch_size = 128), epochs = 10, validation_data = (testAttributes, testLabels))
 
 predictions = model.predict(testAttributes)
 predicted_labels = labelBinarizer.inverse_transform(predictions)
