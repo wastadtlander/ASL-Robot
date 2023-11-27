@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPool2D, Flatten, Dropout, BatchNormalization
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelBinarizer
 import pandas as pd
+import numpy as np
 
 ''' Loads and preprocesses data. '''
 
@@ -26,28 +26,40 @@ testAttributes = (test.values[:, 1:] / 255).reshape(-1, 28, 28, 1)
     Running for 10 epochs.
 '''
 
-# TODO: ^ Check if other activation functions/optimizer/loss/epochs work better (doubt it will).
-# TODO: Play around with and eliminate layers that are unneeded.
-
 model = Sequential()
-model.add(Conv2D(75, (3,3), strides = 1, padding = "same", activation = "relu", input_shape = (28,28,1)))
+model.add(Conv2D(32, (3, 3), strides=1, padding="same", activation="tanh", input_shape=(28, 28, 1)))
 model.add(BatchNormalization())
-model.add(MaxPool2D((2,2), strides = 2, padding = "same"))
-model.add(Conv2D(50, (3,3), strides = 1, padding = "same", activation = "relu"))
+model.add(MaxPool2D((2, 2), strides=2, padding="same"))
+model.add(Conv2D(16, (3, 3), strides=1, padding="same", activation="tanh"))
 model.add(Dropout(0.2))
 model.add(BatchNormalization())
-model.add(MaxPool2D((2,2), strides = 2, padding = "same"))
-model.add(Conv2D(25, (3,3), strides = 1, padding = "same", activation = "relu"))
+model.add(MaxPool2D((2, 2), strides=2, padding="same"))
+model.add(Conv2D(8, (3, 3), strides=1, padding="same", activation="tanh"))
 model.add(BatchNormalization())
-model.add(MaxPool2D((2,2), strides = 2, padding = "same"))
+model.add(MaxPool2D((2, 2), strides=2, padding="same"))
 model.add(Flatten())
-model.add(Dense(units = 512, activation = "relu"))
+model.add(Dense(units=128, activation="tanh"))
 model.add(Dropout(0.3))
-model.add(Dense(units = 24, activation = "softmax"))
-
-model.compile(optimizer = "adam", loss = "categorical_crossentropy", metrics = ["accuracy"])
+model.add(Dense(units=24, activation="softmax"))
+model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 model.summary()
 
 history = model.fit(trainAttributes, trainLabels, batch_size = 128, epochs = 10, validation_data = (testAttributes, testLabels))
 
-model.save("models/relu/smnist.keras")
+predictions = model.predict(testAttributes)
+predicted_labels = labelBinarizer.inverse_transform(predictions)
+true_labels = labelBinarizer.inverse_transform(testLabels)
+cm = confusion_matrix(true_labels, predicted_labels)
+plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+plt.title("Confusion Matrix")
+plt.colorbar()
+classes = [str(i) for i in range(24)]
+tick_marks = np.arange(len(classes))
+plt.xticks(tick_marks, classes, rotation=45)
+plt.yticks(tick_marks, classes)
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+plt.savefig("models/tanh/confusion_matrix.png")
+plt.show()
+
+model.save("models/tanh/smnist.keras")
