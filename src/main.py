@@ -1,6 +1,7 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+import argparse
 import cv2
 import mediapipe as mp
 from keras.models import load_model
@@ -8,7 +9,14 @@ import numpy as np
 import pandas as pd
 import string
 
-model = load_model("models/relu/smnist.keras")
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--model', 
+                    type=str, 
+                    choices=['elu', 'exponential', 'relu', 'selu', 'sigmoid', 'softplus', 'softsign', 'tanh'], 
+                    default='relu')
+args = parser.parse_args()
+
+model = load_model("models/" + args.model + "/smnist.keras")
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
