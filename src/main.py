@@ -26,6 +26,10 @@ cap = cv2.VideoCapture(0)
 
 label_mapping = {idx: letter for idx, letter in enumerate(string.ascii_uppercase) if letter not in ['J', 'Z']}
 
+print(label_mapping)
+
+padding = 50
+
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -40,22 +44,31 @@ while True:
             bounding_box = cv2.boundingRect(np.array([[(lm.x * frame.shape[1], lm.y * frame.shape[0]) for lm in hand_landmarks.landmark]]).astype(np.int32))
             x, y, w, h = bounding_box
             if x >= 0 and y >= 0:
+                padding_x = padding
+                padding_y = padding
+                
+                x = max(0, x - padding_x)
+                y = max(0, y - padding_y)
+                w += 2 * padding_x
+                h += 2 * padding_y
+                
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+                # mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                 model_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 model_frame = model_frame[y:y + h, x:x + w]
-                model_frame = cv2.resize(model_frame, (28,28))
+                model_frame = cv2.resize(model_frame, (28, 28))
+                cv2.imshow('bruh', model_frame)
                 model_frame = pd.DataFrame(model_frame.flatten()).T
-                model_frame = model_frame.values.astype(float) / 255.0
-                model_frame = model_frame.reshape(-1, 28, 28, 1)
+                model_frame = (model_frame.values / 255.0).reshape(-1, 28, 28, 1)
                 predicted_sign = model.predict(model_frame)
                 predicted_label = np.argmax(predicted_sign)
-                top3_labels = np.argsort(predicted_sign, axis=1)[0][-3:][::-1]
-                top3_values = np.take(predicted_sign, top3_labels)
-                top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]                
-                print("Top 3 Predictions:", top3_predictions)
+                print(label_mapping[predicted_label])
+                # top3_labels = np.argsort(predicted_sign, axis=1)[0][-3:][::-1]
+                # top3_values = np.take(predicted_sign, top3_labels)
+                # top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]                
+                # print("Top 3 Predictions:", top3_predictions)
 
-    cv2.imshow('Sign Language Detection', frame)
+    # cv2.imshow('Sign Language Detection', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
