@@ -31,8 +31,6 @@ label_mapping = {
     18: 'T', 19: 'U', 20: 'V', 21: 'W', 22: 'X', 23: 'Y'
 }
 
-print(label_mapping)
-
 padding = 50
 
 while True:
@@ -62,7 +60,8 @@ while True:
                 model_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 model_frame = model_frame[y:y + h, x:x + w]
                 model_frame = cv2.resize(model_frame, (28, 28))
-                model_frame = pd.DataFrame(model_frame)
+                cv2.imshow('Sign Language Detection', model_frame)
+                model_frame = pd.DataFrame(model_frame.flatten()).T
                 model_frame = (model_frame.values / 255.0).reshape(-1, 28, 28, 1)
                 predicted_sign = model.predict(model_frame)
                 predicted_label = np.argmax(predicted_sign)
@@ -71,7 +70,7 @@ while True:
                 top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]                
                 print("Top 3 Predictions:", top3_predictions)
 
-    cv2.imshow('Sign Language Detection', frame)
+    # cv2.imshow('Sign Language Detection', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
