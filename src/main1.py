@@ -7,6 +7,7 @@ import mediapipe as mp
 from keras.models import load_model
 import numpy as np
 import pandas as pd
+import Command
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--model', 
@@ -70,8 +71,9 @@ while True:
                 top3_labels = np.argsort(predicted_sign, axis=1)[0][-3:][::-1]
                 top3_values = np.take(predicted_sign, top3_labels)
                 top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]
-                # if top3_labels[0] == 2 and top3_values[0] >= .9:
-                #     break;
+                if top3_values[0] >= .9 or top3_values[1] >= .9 or top3_values[2] >= .9:
+                    if Command.commandHook(top3_labels):
+                        break
                 print("Top 3 Predictions:", top3_predictions)
 
 
