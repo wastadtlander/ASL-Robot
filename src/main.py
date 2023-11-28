@@ -7,7 +7,6 @@ import mediapipe as mp
 from keras.models import load_model
 import numpy as np
 import pandas as pd
-import string
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--model', 
@@ -24,12 +23,14 @@ hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_c
 
 cap = cv2.VideoCapture(0)
 
-label_mapping = {
-    0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F',
-    6: 'G', 7: 'H', 8: 'I', 9: 'K', 10: 'L', 11: 'M',
-    12: 'N', 13: 'O', 14: 'P', 15: 'Q', 16: 'R', 17: 'S',
-    18: 'T', 19: 'U', 20: 'V', 21: 'W', 22: 'X', 23: 'Y'
-}
+# label_mapping = {
+#     0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F',
+#     6: 'G', 7: 'H', 8: 'I', 9: 'K', 10: 'L', 11: 'M',
+#     12: 'N', 13: 'O', 14: 'P', 15: 'Q', 16: 'R', 17: 'S',
+#     18: 'T', 19: 'U', 20: 'V', 21: 'W', 22: 'X', 23: 'Y'
+# }
+
+label_mapping = {0: 'A', 1: 'B', 2: 'C'}
 
 padding = 50
 
