@@ -68,10 +68,12 @@ while True:
                 predicted_label = np.argmax(predicted_sign)
                 top3_labels = np.argsort(predicted_sign, axis=1)[0][-3:][::-1]
                 top3_values = np.take(predicted_sign, top3_labels)
-                top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]                
+                top3_predictions = [(label_mapping.get(label, "Unknown"), value) for label, value in zip(top3_labels, top3_values)]
+                if top3_labels[0] == 2 and top3_values[0] >= .9:
+                    break;
                 print("Top 3 Predictions:", top3_predictions)
 
-    # cv2.imshow('Sign Language Detection', frame)
+    cv2.imshow('Sign Language Detection', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
