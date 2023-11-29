@@ -4,22 +4,28 @@ uu = 0
 labels = []
 string = []
 
-def commandHook(self, topLabels):
+def commandHook(topLabels):
     global ii, uu, string, labels
-    if ii < 20 and uu < 2:
-        labels[ii] = topLabels[0]
+    if ii < 40 and uu < 2:
+        labels.append(topLabels[0])
         ii = ii+1
     else:
         ii = 0
-        labels = []
-        string[uu] = np.round(np.average(labels))
-        uu = uu+1
-    if uu == 1:
-        uu = 0
-        command = string
-        string = []
+        if len(labels) > 0:
+            avg_label = np.round(np.average(labels))
+            string.append(avg_label)
+            labels = []
+            uu += 1
+            if uu == 2:
+                uu = 0
+                command = string
+                string = []
 
-    if command == [0, 2]:
-        return 1
-    else:
-        return 0
+                if command == [0, 1]:
+                    return 2
+                elif command == [1, 2]:
+                    return 3
+                elif command == [2, 0]:
+                    return 1
+
+    return 0
