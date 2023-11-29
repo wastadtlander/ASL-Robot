@@ -26,8 +26,8 @@ import numpy as np
 train = pd.read_csv("./data/sign_mnist_train.csv")
 test = pd.read_csv("./data/sign_mnist_test.csv")
 
-filtered_train = train[train['label'].isin([0, 1, 2])]
-filtered_test = test[test['label'].isin([0, 1, 2])]
+filtered_train = train[train['label'].isin([0, 1, 13])]
+filtered_test = test[test['label'].isin([0, 1, 13])]
 
 labelBinarizer = LabelBinarizer()
 trainLabels = labelBinarizer.fit_transform(filtered_train["label"])
